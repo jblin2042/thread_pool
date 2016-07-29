@@ -43,22 +43,22 @@ int Enqueue ( List_handle **handle , void *data , int data_byte ) {
 }
 
 void *Dequeue ( List_handle **handle ) {
-	if ( ( ! * handle ) || ( ! handle ) ) return NULL ;
+	if ( ! * handle || ! handle ) {
+		return NULL ;
+	}
 
-	List **p_head = ( List ** ) handle , * p_node = * p_head ;
+	List **p_head = ( List ** ) handle , *p_node = * p_head ;
 
 	unsigned char* p_data = p_node->data ;
 	* p_head = ( * p_head )->next ;
 
-	free ( p_node ) ; p_node = NULL ;
+	free ( p_node ) ;
+	p_node = NULL ;
 
 	return ( void* ) p_data ;
 }
 
-
-
 #if 0
-
 typedef struct _Test_data {
 	void*(*Functione) ( void* ) ;
 	void *arg ;
@@ -105,6 +105,51 @@ int main ( void ) {
 		free ( p_data ) ; p_data = NULL ;
 	}
 
+	}
+	return 0 ;
+}
+#endif
+#if 0
+typedef struct _Test_data {
+	void*(*Functione) ( void* ) ;
+	void *arg ;
+} Test_data ;
+
+void * Function ( void *arg ) {
+//	printf ( "argv :%s\n" , ( char* ) arg ) ;
+	return NULL ;
+}
+
+int main ( void ) {
+	Test_data data ;
+	void* head = Create_queue_head ( ) ;
+	while ( 1 ) {
+		int i = 0 ;
+		for ( i = 0 ; i < 5000 ; ++ i ) {
+			data.Functione = Function ;
+			data.arg = ( void* ) calloc ( 100 , sizeof(char) ) ;
+			snprintf ( ( char* ) data.arg , 100 , "%d%d%d%d" , i , i , i , i ) ;
+			if ( ! data.arg ) {
+				printf ( "calloc error\n" ) ;
+				break ;
+			}
+			Enqueue ( & head , & data , sizeof(Test_data) ) ;
+		}
+
+		Test_data* p_data = NULL ;
+		while ( 1 ) {
+			p_data = ( Test_data* ) Dequeue ( & head ) ;
+			if ( ! p_data ) {
+//				printf ( "NULL\n" ) ;
+				break ;
+			}
+
+			p_data->Functione ( p_data->arg ) ;
+			free ( p_data->arg ) ;
+			p_data->arg = NULL ;
+			free ( p_data ) ;
+			p_data = NULL ;
+		}
 	}
 	return 0 ;
 }
